@@ -1,0 +1,23 @@
+{
+    "name": "superzc/miniprogram",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Superzc\\Miniprogram\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "superzc"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Superzc\\Miniprogram\\MiniprogramServiceProvider"
+            ]
+        }
+    }
+}
