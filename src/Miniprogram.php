@@ -22,7 +22,7 @@ class Miniprogram {
 
         return [
             'ret' => 0,
-            'msg' => 'success',
+            'msg' => 'success1',
             'data' => $data,
         ];
     }
