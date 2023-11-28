@@ -20,11 +20,11 @@ class Miniprogram {
     {
         $data = [];
 
-        return response()->json([
+        return [
             'ret' => 0,
             'msg' => 'success',
             'data' => $data,
-        ]);
+        ];
     }
  
 }
