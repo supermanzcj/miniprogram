@@ -1,7 +1,7 @@
-# Laravel Extension Pack
+# MiniProgram Extension Pack
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/vendor/package.svg?style=flat-square)](https://packagist.org/packages/superzc/miniprogram)
-[![Total Downloads](https://img.shields.io/packagist/dt/vendor/package.svg?style=flat-square)](https://packagist.org/packages/superzc/miniprogram)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/superzc/miniprogram.svg?style=flat-square)](https://packagist.org/packages/superzc/miniprogram)
+[![Release Version](https://img.shields.io/badge/release-1.0.0-red.svg)](https://github.com/supermanzcj/miniprogram/releases)
 
 This package provides additional features to the Laravel framework.
 
