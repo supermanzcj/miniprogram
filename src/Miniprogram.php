@@ -5,8 +5,8 @@ namespace Superzc\Miniprogram;
 // use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\Http;
 
-class Miniprogram {
-
+class Miniprogram
+{
     protected $appid;
     protected $appsecret;
 
@@ -47,16 +47,90 @@ class Miniprogram {
 
         return $this->processResponse($response);
     }
-    
+
     /**
      * 小程序登录
      * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-login/code2Session.html
      */
-    public function codeToSession($code)
+    public function code2Session($code)
     {
         $response = Http::get("https://api.weixin.qq.com/sns/jscode2session?appid=" . $this->appid . "&secret=" . $this->appsecret . "&js_code=" . $code . "&grant_type=authorization_code");
 
         return $this->processResponse($response);
+    }
+
+    /**
+     * 检验登录态
+     * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-login/checkSessionKey.html
+     */
+    public function checkSessionKey()
+    {
+        $access_token = $this->requestAccessToken();
+
+        $response = Http::get("https://api.weixin.qq.com/wxa/checksession?access_token=" . $access_token);
+
+        return $this->processResponse($response);
+    }
+
+    /**
+     * 获取用户encryptKey
+     * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/internet/getUserEncryptKey.html
+     */
+    public function getUserEncryptKey($openid, $session_key)
+    {
+        $signature = hash_hmac('sha256', $session_key, '');
+
+        $postData = [
+            'openid' => $openid,
+            'signature' => $signature,
+            'sig_method' => 'hmac_sha256',
+        ];
+
+        $access_token = $this->requestAccessToken();
+
+        $response = Http::post("https://api.weixin.qq.com/wxa/business/getuserencryptkey?access_token=" . $access_token, json_encode($postData));
+
+        return $this->processResponse($response);
+    }
+
+    /**
+     * 解密数据
+     *
+     */
+    public function decryptData() {}
+
+    /**
+     * 获取手机号
+     * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html
+     */
+    public function getPhoneNumber($code, $openid = '')
+    {
+        $postData = [
+            'code' => $code,
+            'openid' => $openid,
+        ];
+
+        $access_token = $this->requestAccessToken();
+
+        $response = Http::post("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=" . $access_token, json_encode($postData));
+
+        return $this->processResponse($response);
+    }
+
+    /**
+     * 获取登录调用凭据
+     */
+    private function requestAccessToken()
+    {
+        $access_token = "";
+
+        // 获取接口调用凭据
+        $accessTokenRet = $this->getStableAccessToken();
+        if ($accessTokenRet !== false) {
+            $access_token = $accessTokenRet['access_token'];
+        }
+
+        return $access_token;
     }
 
     /**
@@ -81,5 +155,5 @@ class Miniprogram {
 
         return $data;
     }
- 
+
 }
