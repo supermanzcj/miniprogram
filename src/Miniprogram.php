@@ -15,8 +15,8 @@ class Miniprogram {
      */
     public function __construct($config)
     {
-        $this->appid = $config('miniprogram.wechat.appid');
-        $this->appsecret = $config('miniprogram.wechat.appsecret');
+        $this->appid = $config->get('miniprogram.wechat.appid');
+        $this->appsecret = $config->get('miniprogram.wechat.appsecret');
     }
 
     /**
