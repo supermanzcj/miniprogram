@@ -13,10 +13,10 @@ class Miniprogram {
     /**
      * 构造方法
      */
-    public function __construct($appid, $appsecret)
+    public function __construct($config)
     {
-        $this->appid = $appid;
-        $this->appsecret = $appsecret;
+        $this->appid = $config('miniprogram.wechat.appid');
+        $this->appsecret = $config('miniprogram.wechat.appsecret');
     }
 
     /**
