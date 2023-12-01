@@ -94,12 +94,6 @@ class Miniprogram
     }
 
     /**
-     * 解密数据
-     *
-     */
-    public function decryptData() {}
-
-    /**
      * 获取手机号
      * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html
      */
@@ -116,6 +110,46 @@ class Miniprogram
 
         return $this->processResponse($response);
     }
+
+    /**
+     * 生成用户登录态加密信息
+     */
+    public function createUserSession($openid, $session_key)
+    {
+        require_once("xxtea.php");
+
+        $result = $this->getUserEncryptKey($openid, $session_key);
+        $result = json_decode($result, true);
+
+        $version = '';
+        $userSession = '';
+
+        if ($result['errcode'] === 0) {
+            $keyInfoList = $result['key_info_list'];
+            $encrypt_key = $keyInfoList[0]['encrypt_key'];
+            $version = $keyInfoList[0]['version'];
+            $create_time = $keyInfoList[0]['create_time'];
+
+            $data = [
+                'openid' => $openid,
+                'session_key' => $session_key,
+                'version' => $version,
+                'timestamp' => $create_time,
+            ];
+            $userSession = xxtea_encrypt(json_encode($data), $encrypt_key);
+        }
+
+        return [
+            'version' => $version,
+            'userSession' => $userSession,
+        ];
+    }
+
+    /**
+     * 解密数据
+     *
+     */
+    public function decryptData() {}
 
     /**
      * 获取登录调用凭据
