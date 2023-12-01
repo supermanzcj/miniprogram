@@ -4,6 +4,7 @@ namespace Superzc\Miniprogram;
 
 // use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class Miniprogram
 {
@@ -43,7 +44,7 @@ class Miniprogram
             'force_refresh' => $force_refresh,
         ];
 
-        $response = Http::post("https://api.weixin.qq.com/cgi-bin/stable_token", json_encode($postData));
+        $response = Http::post("https://api.weixin.qq.com/cgi-bin/stable_token", $postData);
 
         return $this->processResponse($response);
     }
@@ -78,7 +79,8 @@ class Miniprogram
      */
     public function getUserEncryptKey($openid, $session_key)
     {
-        $signature = hash_hmac('sha256', $session_key, '');
+        
+        $signature = hash_hmac('sha256', '', $session_key);
 
         $postData = [
             'openid' => $openid,
@@ -88,7 +90,7 @@ class Miniprogram
 
         $access_token = $this->requestAccessToken();
 
-        $response = Http::post("https://api.weixin.qq.com/wxa/business/getuserencryptkey?access_token=" . $access_token, json_encode($postData));
+        $response = Http::get("https://api.weixin.qq.com/wxa/business/getuserencryptkey?access_token=" . $access_token . "&openid=" . $openid . "&signature=" . $signature . "&sig_method=hmac_sha256");
 
         return $this->processResponse($response);
     }
@@ -106,25 +108,24 @@ class Miniprogram
 
         $access_token = $this->requestAccessToken();
 
-        $response = Http::post("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=" . $access_token, json_encode($postData));
+        $response = Http::post("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=" . $access_token, $postData);
 
         return $this->processResponse($response);
     }
 
     /**
-     * 生成用户登录态加密信息
+     * 加密用户登录态信息
      */
-    public function createUserSession($openid, $session_key)
+    public function encryptUserSession($openid, $session_key)
     {
         require_once("xxtea.php");
 
         $result = $this->getUserEncryptKey($openid, $session_key);
-        $result = json_decode($result, true);
-
+        
         $version = '';
-        $userSession = '';
+        $user_session = '';
 
-        if ($result['errcode'] === 0) {
+        if (isset($result['errcode']) && $result['errcode'] === 0) {
             $keyInfoList = $result['key_info_list'];
             $encrypt_key = $keyInfoList[0]['encrypt_key'];
             $version = $keyInfoList[0]['version'];
@@ -136,13 +137,43 @@ class Miniprogram
                 'version' => $version,
                 'timestamp' => $create_time,
             ];
-            $userSession = xxtea_encrypt(json_encode($data), $encrypt_key);
+
+            $user_session = xxtea_encrypt(json_encode($data), $encrypt_key);
+            $user_session = base64_encode($user_session);
         }
 
         return [
             'version' => $version,
-            'userSession' => $userSession,
+            'user_session' => $user_session,
         ];
+    }
+
+    /**
+     * 解密用户登录态信息
+     */
+    public function decryptUserSession($version, $user_session)
+    {
+        require_once("xxtea.php");
+
+        $result = $this->getUserEncryptKey($openid, $session_key);
+        
+        $encrypt_key = '';
+        $user_data = [];
+        if (isset($result['errcode']) && $result['errcode'] === 0) {
+            foreach ($result['key_info_list'] as $key=>$value) {
+                if ($value['version'] == $version && $value['expire_in'] > 0) {
+                    $encrypt_key = $value['encrypt_key'];
+                    break;
+                }
+            }
+
+            if ($encrypt_key) {
+                $user_session = base64_decode($user_session);
+                $user_data = xxtea_decrypt($user_session, $encrypt_key);
+            }
+        }
+
+        return $user_data;
     }
 
     /**
@@ -160,9 +191,11 @@ class Miniprogram
 
         // 获取接口调用凭据
         $accessTokenRet = $this->getStableAccessToken();
+        Log::info("requestAccessToken: ", [$accessTokenRet]);
         if ($accessTokenRet !== false) {
             $access_token = $accessTokenRet['access_token'];
         }
+        Log::info("access_token: ", [$access_token]);
 
         return $access_token;
     }
