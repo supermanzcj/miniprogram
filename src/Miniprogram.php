@@ -114,51 +114,44 @@ class Miniprogram
     }
 
     /**
-     * 加密用户登录态信息
+     * 加密数据
      */
-    public function encryptUserSession($openid, $session_key)
+    public function encryptData($data)
     {
         require_once("xxtea.php");
 
         $result = $this->getUserEncryptKey($openid, $session_key);
         
         $version = '';
-        $user_session = '';
+        $create_time = '';
+        $encrypt_str = '';
 
         if (isset($result['errcode']) && $result['errcode'] === 0) {
             $keyInfoList = $result['key_info_list'];
             $encrypt_key = $keyInfoList[0]['encrypt_key'];
             $version = $keyInfoList[0]['version'];
-            $create_time = $keyInfoList[0]['create_time'];
 
-            $data = [
-                'openid' => $openid,
-                'session_key' => $session_key,
-                'version' => $version,
-                'timestamp' => $create_time,
-            ];
-
-            $user_session = xxtea_encrypt(json_encode($data), $encrypt_key);
-            $user_session = base64_encode($user_session);
+            $encrypt_str = xxtea_encrypt(json_encode($data), $encrypt_key);
+            $encrypt_str = base64_encode($encrypt_str);
         }
 
         return [
             'version' => $version,
-            'user_session' => $user_session,
+            'encrypt_str' => $encrypt_str,
         ];
     }
 
     /**
-     * 解密用户登录态信息
+     * 解密数据
      */
-    public function decryptUserSession($version, $user_session)
+    public function decryptData($encrypt_str, $version)
     {
         require_once("xxtea.php");
 
         $result = $this->getUserEncryptKey($openid, $session_key);
         
         $encrypt_key = '';
-        $user_data = [];
+        $data = [];
         if (isset($result['errcode']) && $result['errcode'] === 0) {
             foreach ($result['key_info_list'] as $key=>$value) {
                 if ($value['version'] == $version && $value['expire_in'] > 0) {
@@ -168,12 +161,16 @@ class Miniprogram
             }
 
             if ($encrypt_key) {
-                $user_session = base64_decode($user_session);
-                $user_data = xxtea_decrypt($user_session, $encrypt_key);
+                $encrypt_str = base64_decode($encrypt_str);
+                $data = xxtea_decrypt($encrypt_str, $encrypt_key);
+            } else {
+                return false;
             }
+        } else {
+            return false;
         }
 
-        return $user_data;
+        return $data;
     }
 
     /**
