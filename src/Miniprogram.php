@@ -4,7 +4,7 @@ namespace Superzc\Miniprogram;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception\DefaultException;
+use Superzc\Miniprogram\Exceptions\DefaultException;
 
 class Miniprogram
 {
