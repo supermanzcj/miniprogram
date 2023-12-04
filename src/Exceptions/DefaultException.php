@@ -17,6 +17,6 @@ class DefaultException extends Exception
         return response()->json([
             'code' => 1,
             'message' => $this->getMessage(),
-        ] 400);
+        ], 400);
     }
 }
