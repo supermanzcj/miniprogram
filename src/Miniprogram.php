@@ -2,9 +2,9 @@
 
 namespace Superzc\Miniprogram;
 
-// use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Exception\DefaultException;
 
 class Miniprogram
 {
@@ -180,10 +180,10 @@ class Miniprogram
                 $data = xxtea_decrypt($encrypt_str, $encrypt_key);
                 $data = json_decode($data, true);
             } else {
-                return false;
+                throw new DefaultException("用户encryptKey已失效");
             }
         } else {
-            return false;
+            throw new DefaultException("获取用户encryptKey失败");
         }
 
         return $data;
@@ -218,13 +218,13 @@ class Miniprogram
             $data = $response->json();
         } elseif ($response->failed()) {
             // 请求失败的处理逻辑
-            return false;
+            throw new DefaultException($response->failed());
         } elseif ($response->clientError()) {
             // 客户端错误 4xx 的处理逻辑
-            return false;
+            throw new DefaultException($response->clientError());
         } elseif ($response->serverError()) {
             // 服务器错误 5xx 的处理逻辑
-            return false;
+            throw new DefaultException($response->serverError());
         }
 
         return $data;
