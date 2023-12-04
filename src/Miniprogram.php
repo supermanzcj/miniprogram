@@ -178,6 +178,7 @@ class Miniprogram
                 $encrypt_str = rawurldecode($encrypt_str);
                 $encrypt_str = base64_decode($encrypt_str);
                 $data = xxtea_decrypt($encrypt_str, $encrypt_key);
+                $data = json_decode($data, true);
             } else {
                 return false;
             }
