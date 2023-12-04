@@ -6,11 +6,6 @@ use Exception;
 
 class DefaultException extends Exception
 {
-    public function __construct($message, $code)
-    {
-        parent::__construct($message, $code);
-    }
-
     // 重定义异常捕获时的response
     public function render(Request $request)
     {
