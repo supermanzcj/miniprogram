@@ -115,8 +115,14 @@ class Miniprogram
 
     /**
      * 加密数据
+     *
+     * @param openid string
+     * @param session_key string
+     * @param data array
+     *
+     * @return array
      */
-    public function encryptData($data)
+    public function encryptData($openid, $session_key, $data)
     {
         require_once("xxtea.php");
 
@@ -143,8 +149,15 @@ class Miniprogram
 
     /**
      * 解密数据
+     *
+     * @param openid string
+     * @param session_key string
+     * @param version int
+     * @param encrypt_str string
+     *
+     * @return array
      */
-    public function decryptData($encrypt_str, $version)
+    public function decryptData($openid, $session_key, $version, $encrypt_str)
     {
         require_once("xxtea.php");
 
