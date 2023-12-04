@@ -26,6 +26,14 @@ class Miniprogram
      */
     public function getAccessToken()
     {
+        // 校验参数
+        if ($this->appid == '') {
+            throw new DefaultException('缺少配置appid');
+        }
+        if ($this->appsecret == '') {
+            throw new DefaultException('缺少配置appsecret');
+        }
+
         $response = Http::get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . $this->appid . "&secret=" . $this->appsecret);
 
         return $this->processResponse($response);
@@ -55,6 +63,11 @@ class Miniprogram
      */
     public function code2Session($code)
     {
+        // 校验参数
+        if ($code == '') {
+            throw new DefaultException('缺少参数code');
+        }
+
         $response = Http::get("https://api.weixin.qq.com/sns/jscode2session?appid=" . $this->appid . "&secret=" . $this->appsecret . "&js_code=" . $code . "&grant_type=authorization_code");
 
         return $this->processResponse($response);
@@ -79,7 +92,14 @@ class Miniprogram
      */
     public function getUserEncryptKey($openid, $session_key)
     {
-        
+        // 校验参数
+        if ($openid == '') {
+            throw new DefaultException('缺少参数openid');
+        }
+        if ($session_key == '') {
+            throw new DefaultException('缺少参数session_key');
+        }
+
         $signature = hash_hmac('sha256', '', $session_key);
 
         $postData = [
@@ -101,6 +121,11 @@ class Miniprogram
      */
     public function getPhoneNumber($code, $openid = '')
     {
+        // 校验参数
+        if ($code == '') {
+            throw new DefaultException('缺少参数code');
+        }
+
         $postData = [
             'code' => $code,
             'openid' => $openid,
