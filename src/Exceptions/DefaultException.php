@@ -3,6 +3,7 @@
 namespace Superzc\Miniprogram\Exceptions;
 
 use Exception;
+use Illuminate\Http\Request;
 
 class DefaultException extends Exception
 {
