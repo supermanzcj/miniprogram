@@ -174,12 +174,6 @@ class Miniprogram
     }
 
     /**
-     * 解密数据
-     *
-     */
-    public function decryptData() {}
-
-    /**
      * 获取登录调用凭据
      */
     private function requestAccessToken()
