@@ -14,7 +14,6 @@ class ErrorCodes
             self::ERROR => '',
             self::INVALID_PARAMS => '',
             self::SERVICE_UNAVAILABLE => '',
-            // 更多的错误码和消息...
         ];
 
         return $messages[$code] ?? 'Error';
