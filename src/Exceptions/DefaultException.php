@@ -11,7 +11,7 @@ class DefaultException extends Exception
     public function render(Request $request)
     {
         return response()->json([
-            'ret' => -1,
+            'ret' => $this->getCode(),
             'msg' => $this->getMessage(),
         ], 400);
     }

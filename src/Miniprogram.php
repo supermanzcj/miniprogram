@@ -5,6 +5,7 @@ namespace Superzc\Miniprogram;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Superzc\Miniprogram\Exceptions\DefaultException;
+use Superzc\Miniprogram\Constants\ErrorCodes;
 
 class Miniprogram
 {
@@ -28,10 +29,10 @@ class Miniprogram
     {
         // 校验参数
         if ($this->appid == '') {
-            throw new DefaultException('缺少配置appid');
+            throw new DefaultException('缺少配置appid', ErrorCodes::INVALID_PARAMS);
         }
         if ($this->appsecret == '') {
-            throw new DefaultException('缺少配置appsecret');
+            throw new DefaultException('缺少配置appsecret', ErrorCodes::INVALID_PARAMS);
         }
 
         $response = Http::get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . $this->appid . "&secret=" . $this->appsecret);
@@ -65,7 +66,7 @@ class Miniprogram
     {
         // 校验参数
         if ($code == '') {
-            throw new DefaultException('缺少参数code');
+            throw new DefaultException('缺少参数code', ErrorCodes::INVALID_PARAMS);
         }
 
         $response = Http::get("https://api.weixin.qq.com/sns/jscode2session?appid=" . $this->appid . "&secret=" . $this->appsecret . "&js_code=" . $code . "&grant_type=authorization_code");
@@ -94,10 +95,10 @@ class Miniprogram
     {
         // 校验参数
         if ($openid == '') {
-            throw new DefaultException('缺少参数openid');
+            throw new DefaultException('缺少参数openid', ErrorCodes::INVALID_PARAMS);
         }
         if ($session_key == '') {
-            throw new DefaultException('缺少参数session_key');
+            throw new DefaultException('缺少参数session_key', ErrorCodes::INVALID_PARAMS);
         }
 
         $signature = hash_hmac('sha256', '', $session_key);
@@ -123,7 +124,7 @@ class Miniprogram
     {
         // 校验参数
         if ($code == '') {
-            throw new DefaultException('缺少参数code');
+            throw new DefaultException('缺少参数code', ErrorCodes::INVALID_PARAMS);
         }
 
         $postData = [
@@ -205,10 +206,10 @@ class Miniprogram
                 $data = xxtea_decrypt($encrypt_str, $encrypt_key);
                 $data = json_decode($data, true);
             } else {
-                throw new DefaultException("用户encryptKey已失效");
+                throw new DefaultException("用户encryptKey已失效", ErrorCodes::ERROR);
             }
         } else {
-            throw new DefaultException("获取用户encryptKey失败");
+            throw new DefaultException("获取用户encryptKey失败", ErrorCodes::ERROR);
         }
 
         return $data;
@@ -243,13 +244,13 @@ class Miniprogram
             $data = $response->json();
         } elseif ($response->failed()) {
             // 请求失败的处理逻辑
-            throw new DefaultException($response->failed());
+            throw new DefaultException($response->failed(), ErrorCodes::SERVICE_UNAVAILABLE);
         } elseif ($response->clientError()) {
             // 客户端错误 4xx 的处理逻辑
-            throw new DefaultException($response->clientError());
+            throw new DefaultException($response->clientError(), ErrorCodes::SERVICE_UNAVAILABLE);
         } elseif ($response->serverError()) {
             // 服务器错误 5xx 的处理逻辑
-            throw new DefaultException($response->serverError());
+            throw new DefaultException($response->serverError(), ErrorCodes::SERVICE_UNAVAILABLE);
         }
 
         return $data;
