@@ -1,6 +1,6 @@
 <?php
 
-namespace Superzc\QQConnect\Constants;
+namespace Superzc\Miniprogram\Constants;
 
 class ErrorCodes
 {
