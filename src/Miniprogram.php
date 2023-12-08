@@ -165,7 +165,6 @@ class Miniprogram
 
             $encrypt_str = xxtea_encrypt(json_encode($data), $encrypt_key);
             $encrypt_str = base64_encode($encrypt_str);
-            $encrypt_str = rawurlencode($encrypt_str);
         }
 
         return [
@@ -201,7 +200,6 @@ class Miniprogram
             }
 
             if ($encrypt_key) {
-                $encrypt_str = rawurldecode($encrypt_str);
                 $encrypt_str = base64_decode($encrypt_str);
                 $data = xxtea_decrypt($encrypt_str, $encrypt_key);
                 $data = json_decode($data, true);
