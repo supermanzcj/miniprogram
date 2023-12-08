@@ -163,7 +163,7 @@ class Miniprogram
             $encrypt_key = $keyInfoList[0]['encrypt_key'];
             $version = $keyInfoList[0]['version'];
 
-            $encrypt_str = xxtea_encrypt(json_encode($data), $encrypt_key);
+            $encrypt_str = xxtea_encrypt(json_encode($data, JSON_UNESCAPED_UNICODE), $encrypt_key);
             $encrypt_str = base64_encode($encrypt_str);
         } else {
             throw new DefaultException('获取用户encryptKey失败', ErrorCodes::ERROR);
