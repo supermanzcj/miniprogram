@@ -13,6 +13,6 @@ class DefaultException extends Exception
         return response()->json([
             'ret' => $this->getCode(),
             'msg' => $this->getMessage(),
-        ], 400);
+        ], 400)->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 }
