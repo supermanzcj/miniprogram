@@ -232,7 +232,7 @@ class Miniprogram
         if ($content == '') {
             throw new DefaultException('缺少参数content', ErrorCodes::INVALID_PARAMS);
         }
-        if (in_array($scene, [1, 2, 3, 4])) {
+        if (!in_array($scene, ['1', '2', '3', '4'])) {
             throw new DefaultException('参数scene不合法', ErrorCodes::INVALID_PARAMS);
         }
         if ($openid == '') {
