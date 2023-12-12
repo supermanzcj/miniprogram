@@ -153,7 +153,7 @@ class Miniprogram
         require_once("xxtea.php");
 
         $result = $this->getUserEncryptKey($openid, $session_key);
-        
+
         $version = '';
         $create_time = '';
         $encrypt_str = '';
@@ -190,11 +190,11 @@ class Miniprogram
         require_once("xxtea.php");
 
         $result = $this->getUserEncryptKey($openid, $session_key);
-        
+
         $encrypt_key = '';
         $data = [];
         if (isset($result['errcode']) && $result['errcode'] === 0) {
-            foreach ($result['key_info_list'] as $key=>$value) {
+            foreach ($result['key_info_list'] as $key => $value) {
                 if ($value['version'] == $version && $value['expire_in'] > 0) {
                     $encrypt_key = $value['encrypt_key'];
                     break;
@@ -213,6 +213,59 @@ class Miniprogram
         }
 
         return $data;
+    }
+
+    /**
+     * 文本内容安全识别
+     * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/sec-center/sec-check/msgSecCheck.html
+     *
+     * @param content string 需检测的文本内容，文本字数的上限为2500字，需使用UTF-8编码
+     * @param scene string 场景枚举值（1 资料；2 评论；3 论坛；4 社交日志）
+     * @param openid string 用户的openid（用户需在近两小时访问过小程序）
+     * @param encrypt_str string
+     *
+     * @return array
+     */
+    public function msgSecCheck($content, $scene, $openid, $session_key, $title = '', $nickname = '')
+    {
+        // 校验参数
+        if ($content == '') {
+            throw new DefaultException('缺少参数content', ErrorCodes::INVALID_PARAMS);
+        }
+        if (in_array($scene, [1, 2, 3, 4])) {
+            throw new DefaultException('参数scene不合法', ErrorCodes::INVALID_PARAMS);
+        }
+        if ($openid == '') {
+            throw new DefaultException('缺少参数openid', ErrorCodes::INVALID_PARAMS);
+        }
+        if ($session_key == '') {
+            throw new DefaultException('缺少参数session_key', ErrorCodes::INVALID_PARAMS);
+        }
+
+        $postData = [
+            'content' => $content,
+            'version' => 2,
+            'scene' => $scene,
+            'openid' => $openid,
+        ];
+
+        // 非必填参数
+        if ($title) {
+            $postData['title'] = $title;
+        }
+        if ($nickname) {
+            $postData['nickname'] = $nickname;
+        }
+        if ($scene == 1) {
+            $signature = hash_hmac('sha256', '', $session_key);
+            $postData['signature'] = $signature;
+        }
+
+        $access_token = $this->requestAccessToken();
+
+        $response = Http::post("https://api.weixin.qq.com/wxa/msg_sec_check?access_token=" . $access_token, $postData);
+
+        return $this->processResponse($response);
     }
 
     /**
