@@ -218,6 +218,8 @@ class Miniprogram
     /**
      * 文本内容安全识别
      * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/sec-center/sec-check/msgSecCheck.html
+     * result.suggest: 建议，有risky、pass、review三种值
+     * result.label: 命中标签枚举值，100 正常；10001 广告；20001 时政；20002 色情；20003 辱骂；20006 违法犯罪；20008 欺诈；20012 低俗；20013 版权；21000 其他
      *
      * @param content string 需检测的文本内容，文本字数的上限为2500字，需使用UTF-8编码
      * @param scene string 场景枚举值（1 资料；2 评论；3 论坛；4 社交日志）
