@@ -146,7 +146,11 @@ class Miniprogram
     {
         require_once("xxtea.php");
 
-        $result = $this->getUserEncryptKey($openid, $session_key);
+        try {
+            $result = $this->getUserEncryptKey($openid, $session_key);
+        } catch (DefaultException $e) {
+            throw new DefaultException($e->getMessage(), $e->getCode());
+        }
 
         $version = '';
         $encrypt_str = '';
@@ -182,7 +186,11 @@ class Miniprogram
     {
         require_once("xxtea.php");
 
-        $result = $this->getUserEncryptKey($openid, $session_key);
+        try {
+            $result = $this->getUserEncryptKey($openid, $session_key);
+        } catch (DefaultException $e) {
+            throw new DefaultException($e->getMessage(), $e->getCode());
+        }
 
         $encrypt_key = '';
         $data = [];
