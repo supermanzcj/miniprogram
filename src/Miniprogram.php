@@ -103,12 +103,6 @@ class Miniprogram
 
         $signature = hash_hmac('sha256', '', $session_key);
 
-        $postData = [
-            'openid' => $openid,
-            'signature' => $signature,
-            'sig_method' => 'hmac_sha256',
-        ];
-
         $access_token = $this->requestAccessToken();
 
         $response = Http::get("https://api.weixin.qq.com/wxa/business/getuserencryptkey?access_token=" . $access_token . "&openid=" . $openid . "&signature=" . $signature . "&sig_method=hmac_sha256");
