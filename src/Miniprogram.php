@@ -149,7 +149,6 @@ class Miniprogram
         $result = $this->getUserEncryptKey($openid, $session_key);
 
         $version = '';
-        $create_time = '';
         $encrypt_str = '';
 
         if (isset($result['errcode']) && $result['errcode'] === 0) {
