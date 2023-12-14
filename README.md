@@ -19,18 +19,32 @@ composer require superzc/miniprogram
 调用类方法
 ```php
 use Superzc\Miniprogram\Miniprogram;
+use Superzc\Miniprogram\Exceptions\DefaultException as MPDefaultException;
 
-$miniprogram = new Miniprogram();
-$result = $miniprogram->doSomething();
+try {
+    $miniprogram = new Miniprogram();
+    $result = $miniprogram->doSomething();
+} catch (MPDefaultException $e) {
+    return response()->json([
+        'ret' => $e->getCode(),
+        'msg' => $e->getMessage(),
+    ]);
+}
 ```
 
 使用门面
 ```php
 use Superzc\Miniprogram\Facades\Miniprogram;
 
-$result = Miniprogram::doSomething();
+try {
+    $result = Miniprogram::doSomething();
+} catch (MPDefaultException $e) {
+    return response()->json([
+        'ret' => $e->getCode(),
+        'msg' => $e->getMessage(),
+    ]);
+}
 ```
-
 
 ## Change log
 暂无
