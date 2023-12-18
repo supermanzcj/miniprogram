@@ -16,6 +16,16 @@ composer require superzc/miniprogram
 
 ## Usage
 
+修改小程序配置文件`config/miniprogram.php`
+```php
+return [
+    'wechat' => [
+        'appid' => 'xxx',
+        'appsecret' => 'xxx',
+    ],
+];
+```
+
 调用类方法
 ```php
 use Superzc\Miniprogram\Miniprogram;
